@@ -3,8 +3,7 @@ package com.futigami.libraryapi.api.dto;
 
 import lombok.*;
 
-@Getter
-@Setter
+@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -14,8 +13,5 @@ public class BookDTO {
     private String title;
     private String author;
     private String isbn;
-
-
-
 
 }
