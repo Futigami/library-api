@@ -2,6 +2,7 @@ package com.futigami.libraryapi.api.resource;
 
 import com.futigami.libraryapi.api.dto.BookDTO;
 import com.futigami.libraryapi.api.exception.ApiErrors;
+import com.futigami.libraryapi.exception.BusinessException;
 import com.futigami.libraryapi.model.entity.Book;
 import com.futigami.libraryapi.service.BookService;
 import org.modelmapper.ModelMapper;
@@ -45,5 +46,11 @@ public class BookController {
         List<ObjectError> allErrors = bindingResult.getAllErrors();
 
         return new ApiErrors(bindingResult);
+    }
+
+    @ExceptionHandler(BusinessException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiErrors handleBusinessException(BusinessException ex){
+        return new ApiErrors(ex);
     }
 }
