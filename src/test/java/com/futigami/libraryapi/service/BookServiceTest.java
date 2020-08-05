@@ -1,12 +1,15 @@
 package com.futigami.libraryapi.service;
 
+import com.futigami.libraryapi.exception.BusinessException;
 import com.futigami.libraryapi.model.entity.Book;
 import com.futigami.libraryapi.model.repository.BookRepository;
 import com.futigami.libraryapi.service.impl.BookServiceImpl;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
@@ -33,10 +36,8 @@ public class BookServiceTest {
     @DisplayName("Salva um livro")
     public void saveBookTest(){
 
-        Book book = Book.builder()
-                .isbn("123")
-                .author("D")
-                .title("A aventura").build();
+        Book book = createValidBook();
+        Mockito.when(repository.existsByIsbn(Mockito.anyString())).thenReturn(false);
         Mockito.when(repository.save(book))
                 .thenReturn(Book.builder()
                 .id(1l)
@@ -50,5 +51,27 @@ public class BookServiceTest {
         assertThat(savedBook.getTitle()).isEqualTo("A aventura");
         assertThat(savedBook.getAuthor()).isEqualTo("D");
 
+    }
+
+
+    @Test
+    @DisplayName("Lança erro de negócio ao tentar salvar livro com isbn duplicado")
+    public void shouldNotSaveABookDuplicatedISBN(){
+
+        Book book = createValidBook();
+        Mockito.when(repository.existsByIsbn(Mockito.anyString())).thenReturn(true);
+
+        Throwable exception = Assertions.catchThrowable(() -> service.save(book));
+
+        assertThat(exception).isInstanceOf(BusinessException.class)
+                .hasMessage("Isbn já cadastrado.");
+        Mockito.verify(repository, Mockito.never()).save(book);
+    }
+
+    private Book createValidBook() {
+        return Book.builder()
+                .isbn("123")
+                .author("D")
+                .title("A aventura").build();
     }
 }

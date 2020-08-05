@@ -1,5 +1,6 @@
 package com.futigami.libraryapi.service.impl;
 
+import com.futigami.libraryapi.exception.BusinessException;
 import com.futigami.libraryapi.model.entity.Book;
 import com.futigami.libraryapi.model.repository.BookRepository;
 import com.futigami.libraryapi.service.BookService;
@@ -16,6 +17,9 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public Book save(Book book) {
+        if(repository.existsByIsbn(book.getIsbn())){
+            throw new BusinessException("Isbn já cadastrado.");
+        }
         return repository.save(book);
     }
 }
