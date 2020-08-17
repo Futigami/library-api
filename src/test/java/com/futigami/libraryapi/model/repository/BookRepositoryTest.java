@@ -60,7 +60,7 @@ public class BookRepositoryTest {
         assertThat(foundBook.isPresent()).isTrue();
     }
 
-    
+
 
     private Book createNewBook(String isbn) {
         return Book.builder()
